@@ -6,6 +6,7 @@ from mpi4py import MPI
 from rl_modules.ddpg_agent import ddpg_agent
 import random
 import torch
+from pick_place_env import SawyerMultiGoalPickPlaceEnv as myenv
 
 """
 train the agent, the MPI part code is copy from openai baselines(https://github.com/openai/baselines/blob/master/baselines/her)
@@ -19,12 +20,15 @@ def get_env_params(env):
             'action': env.action_space.shape[0],
             'action_max': env.action_space.high[0],
             }
-    params['max_timesteps'] = env._max_episode_steps
+    params['max_timesteps'] = 150
     return params
 
 def launch(args):
     # create the ddpg_agent
-    env = gym.make(args.env_name)
+    if False:
+        env = gym.make(args.env_name)
+    else:
+        env = myenv()
     # set random seeds for reproduce
     env.seed(args.seed + MPI.COMM_WORLD.Get_rank())
     random.seed(args.seed + MPI.COMM_WORLD.Get_rank())
